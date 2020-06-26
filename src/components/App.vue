@@ -7,13 +7,22 @@
 <script lang="ts">
   import {Component, Vue} from 'vue-property-decorator';
   import TSocket from "@/socket/TSocket";
+  import {vPlotsModule, vPlotsNamespace} from '@/store/vPlots';
+  import vPlots from '@/store/vPlots';
 
-  @Component
+  @Component({
+    vuexModules: {
+      [vPlotsNamespace]: vPlots
+    }
+  })
   export default class App extends Vue {
     ts?: TSocket;
 
-    async created(){
+    @vPlotsModule.State graph;
+    @vPlotsModule.Mutation push;
 
+    async created(){
+      this.push('test')
       this.ts = await (new TSocket()).connect();
       if(!this.ts) return ;
 
