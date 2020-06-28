@@ -1,7 +1,5 @@
-type WssEventListener = (data: any, ws?: WebSocket) => void;
-type WssHandlerDict = { [key: string]: WssEventListener };
-
 import WsMessage from "@/socket/WsMessage";
+import {WssEventListener, WssHandlerDict} from "@/types/types";
 
 export default class TSocket {
   private port = 8080;
@@ -27,14 +25,21 @@ export default class TSocket {
       this.socket.onmessage = (message) => {
         this.receive(message);
       };
+
+      this.socket.onclose = () => {
+        this.connect();
+      }
     });
   }
 
   private receive(message: MessageEvent) {
+
     const msg = new WsMessage(message.data);
+
     const event = msg.event;
     const data = msg.message;
     const wssHandler = this.WSS_HANDLERS[event];
+    console.log(msg, this.WSS_HANDLERS, wssHandler, event);
     if(wssHandler !== undefined) {
       this.executeWssHandler(wssHandler, data);
     }
@@ -48,7 +53,7 @@ export default class TSocket {
     this.WSS_HANDLERS[event] = handler;
   }
 
-  emit(event:string , message: any) {
+  emit(event:string, message: any) {
     if(!this.socket) return;
 
     const messagePack = {
