@@ -1,14 +1,14 @@
 <template>
-  <b-row align-v="stretch" class="v-balance-row">
-    <b-row align-v="stretch" class="v-balance-row__top">
-      <b-col cols="6">{{name}}</b-col>
-      <b-col cols="6">{{sum}}</b-col>
-    </b-row>
-    <b-row align-v="stretch" class="v-balance-row__bottom">
-      <b-col cols="2">{{position.balance}} шт.</b-col>
-      <b-col cols="10">{{change}}</b-col>
-    </b-row>
-  </b-row>
+  <div class="v-balance-row" @click.stop="instrumentPortfolio">
+    <div class="v-balance-row__top">
+      <div class="v-balance-row__top__name">{{name}}</div>
+      <div class="v-balance-row__top__sum">{{sum}}</div>
+    </div>
+    <div class="v-balance-row__bottom">
+      <div class="v-balance-row__bottom__balance">{{position.balance}} шт.</div>
+      <div class="v-balance-row__bottom__change">{{change}}</div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -21,6 +21,14 @@
   export default class VBalanceRow extends Vue {
     @Prop() position !: PortfolioPosition;
 
+
+
+
+    instrumentPortfolio(){
+      this.TS.on('tinkoff:instrument_portfolio:get', (message, ws) => {
+        console.log(message);
+      });
+    }
 
     get sum() {
       return currency((this.position.averagePositionPrice?.value ?? 0) * this.position.balance, this.position.averagePositionPrice?.currency);
@@ -49,5 +57,19 @@
     display: flex;
     flex-direction: column;
     padding: 8px;
+    margin-top: 8px;
+    background: #efefef;
+    cursor: pointer;
+
+    & &__top,
+    & &__bottom {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    &:hover {
+      background: #e1e1e1;
+    }
   }
 </style>

@@ -15,7 +15,7 @@
 
   import vPlots from '@/store/vPlots.module';
   import vCabinet, {vCabinetModule, vCabinetNamespace} from "@/store/vCabinet.module";
-  import {Portfolio} from "@/types/domain";
+  import {Currencies, Portfolio} from "@/types/domain";
   import {WssEventListener} from "@/types/types";
   import VBalance from "@/components/balance/VBalance.vue";
 
@@ -37,14 +37,22 @@
 
     @vCabinetModule.Mutation setPortfolio;
     @vCabinetModule.State portfolio;
+    @vCabinetModule.Mutation setCurrencies;
+    @vCabinetModule.State currencies;
+
 
     async created(){
       this.TS.on('tinkoff:orderbook:update', (message, ws) => {});
       this.TS.on('tinkoff:portfolio:get', (message, ws) => {
         this.setPortfolio(message as Portfolio);
       });
+      this.TS.on('tinkoff:portfolio_currencies:get', (message, ws) => {
+        this.setCurrencies(message as Currencies);
+      });
+
 
       this.TS.emit('front:portfolio:get', {});
+      this.TS.emit('front:portfolio_currencies:get', {});
     }
   }
 </script>

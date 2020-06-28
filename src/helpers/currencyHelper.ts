@@ -1,6 +1,6 @@
-import {CurrencyDict} from "@/types/types";
+import {CurrencyDict, CurrencyItem} from "@/types/types";
 
-export const CurrencDict : CurrencyDict = {
+export const currencyDict : CurrencyDict = {
   "RUB": {
     symbol: "₽",
     code: "RUB",
@@ -235,5 +235,8 @@ export function currency(value: number, code="RUB") {
     currency: code,
     currencyDisplay: "symbol"
   });
+}
 
+export function getCurrency(code="RUB"): CurrencyItem | undefined {
+  return currencyDict[code];
 }
