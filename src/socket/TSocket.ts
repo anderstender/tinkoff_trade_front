@@ -38,10 +38,11 @@ export default class TSocket {
 
     const event = msg.event;
     const data = msg.message;
-    const wssHandler = this.WSS_HANDLERS[event];
-    console.log(msg, this.WSS_HANDLERS, wssHandler, event);
-    if(wssHandler !== undefined) {
-      this.executeWssHandler(wssHandler, data);
+    const wssHandlers = this.WSS_HANDLERS[event];
+    if(wssHandlers !== undefined && wssHandlers.length) {
+      wssHandlers.forEach((wssHandler) => {
+        this.executeWssHandler(wssHandler, data);
+      });
     }
   }
 
@@ -50,7 +51,10 @@ export default class TSocket {
   }
 
   on(event: string, handler: WssEventListener) {
-    this.WSS_HANDLERS[event] = handler;
+    if(!this.WSS_HANDLERS[event]) {
+      this.WSS_HANDLERS[event] = [];
+    }
+    this.WSS_HANDLERS[event].push(handler);
   }
 
   emit(event:string, message: any) {

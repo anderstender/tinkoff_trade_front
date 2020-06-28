@@ -39,4 +39,13 @@ export declare type FIGI = {
 
 
 export declare type WssEventListener = (data: any, ws?: WebSocket) => void;
-export declare type WssHandlerDict = { [key: string]: WssEventListener };
+export declare type WssEventListeners = Array<WssEventListener>;
+export declare type WssHandlerDict = { [key: string]: WssEventListeners };
+export declare type CurrencyItem = {
+  code: string;
+  symbol: string;
+  name: string;
+};
+export declare type CurrencyDict = {
+  [key: string]: CurrencyItem
+}

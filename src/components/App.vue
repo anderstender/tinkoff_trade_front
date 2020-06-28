@@ -1,8 +1,8 @@
 <template>
   <b-container class="v-app-container" fluid="ld">
     <b-row align-v="stretch">
-      <b-col cols="2">test1</b-col>
-      <b-col cols="10">test2</b-col>
+      <b-col cols="4"><v-balance/></b-col>
+      <b-col cols="8">test2</b-col>
     </b-row>
   </b-container>
 </template>
@@ -17,9 +17,13 @@
   import vCabinet, {vCabinetModule, vCabinetNamespace} from "@/store/vCabinet.module";
   import {Portfolio} from "@/types/domain";
   import {WssEventListener} from "@/types/types";
+  import VBalance from "@/components/balance/VBalance.vue";
 
 
   @Component({
+    components: {
+      VBalance
+    },
     vuexModules: {
       [vPlotsNamespace]: vPlots,
       [vCabinetNamespace]: vCabinet
@@ -32,25 +36,15 @@
     @vCabinetModule.Action send !: (event: string, message: any) => any;
 
     @vCabinetModule.Mutation setPortfolio;
-
     @vCabinetModule.State portfolio;
 
-    ts?: TSocket;
-
     async created(){
-      this.ts =  await (new TSocket()).connect();
-      this.ts.on('tinkoff:orderbook:update', (message, ws) => {});;
-      this.ts.on('tinkoff:portfolio:get', (message, ws) => {
+      this.TS.on('tinkoff:orderbook:update', (message, ws) => {});
+      this.TS.on('tinkoff:portfolio:get', (message, ws) => {
         this.setPortfolio(message as Portfolio);
-        console.log(this.portfolio);
       });
 
-      this.ts.emit('fron:candle:sub', {
-        tiker: 'AAPL'
-      });
-
-      this.ts.emit('front:portfolio:get', {});
-
+      this.TS.emit('front:portfolio:get', {});
     }
   }
 </script>

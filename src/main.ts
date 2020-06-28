@@ -3,8 +3,12 @@ import './bootstrap';
 import store from "./store";
 
 import App from "@/components/App.vue";
+import TSocket from "@/socket/TSocket";
 
-new Vue({
-  render: h => h(App),
-  store
-}).$mount('#app')
+(async () => {
+  Vue.prototype.$ts = await (new TSocket()).connect();
+  new Vue({
+    render: h => h(App),
+    store
+  }).$mount('#app');
+})();

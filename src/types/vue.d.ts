@@ -1,4 +1,4 @@
-
+import Vue from "vue";
 import {DefaultComputed, DefaultData, DefaultMethods, DefaultProps, PropsDefinition} from "vue/types/options";
 
 declare module 'vue/types/options' {
@@ -12,3 +12,4 @@ declare module 'vue/types/options' {
     vuexModules?: {[key: string]: any}
   }
 }
+
