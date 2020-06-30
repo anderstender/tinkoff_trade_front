@@ -10,8 +10,7 @@ export default class TSocket {
   private WSS_HANDLERS: WssHandlerDict = {};
 
 
-  constructor() {
-  }
+  constructor() {}
 
   connect(): Promise<TSocket> {
     return new Promise((resolve, reject) => {
