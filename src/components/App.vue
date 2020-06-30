@@ -1,7 +1,12 @@
 <template>
   <b-container class="v-app-container" fluid="ld">
     <b-row align-v="stretch">
-      <b-col cols="4"><v-balance/></b-col>
+      <b-col cols="4">
+        <v-balance @instrument-click="showInstrument"/>
+        <v-instrument-info
+          v-if="selectedPosition"
+          :position="selectedPosition" />
+      </b-col>
       <b-col cols="8">test2</b-col>
     </b-row>
   </b-container>
@@ -15,14 +20,15 @@
 
   import vPlots from '@/store/vPlots.module';
   import vCabinet, {vCabinetModule, vCabinetNamespace} from "@/store/vCabinet.module";
-  import {Currencies, Portfolio} from "@/types/domain";
+  import {Currencies, Portfolio, PortfolioPosition} from "@/types/domain";
   import {WssEventListener} from "@/types/types";
   import VBalance from "@/components/balance/VBalance.vue";
-
+  import VInstrumentInfo from '@/components/instrument/VInstrumentInfo.vue';
 
   @Component({
     components: {
-      VBalance
+      VBalance,
+      VInstrumentInfo
     },
     vuexModules: {
       [vPlotsNamespace]: vPlots,
@@ -40,10 +46,11 @@
     @vCabinetModule.Mutation setCurrencies;
     @vCabinetModule.State currencies;
 
+    selectedPosition: PortfolioPosition | null = null;
 
     async created(){
       this.$nextTick(() => {
-        console.log(this.TS);
+        //console.log(this.TS);
         this.TS.on('tinkoff:orderbook:update', (message, ws) => {});
         this.TS.on('tinkoff:portfolio:get', (message, ws) => {
           this.setPortfolio(message as Portfolio);
@@ -56,6 +63,10 @@
         this.TS.emit('front:portfolio:get', {});
         this.TS.emit('front:portfolio_currencies:get', {});
       });
+    }
+
+    showInstrument(position: PortfolioPosition) {
+      this.selectedPosition = position;
     }
   }
 </script>
