@@ -66,7 +66,12 @@
     }
 
     showInstrument(position: PortfolioPosition) {
-      this.selectedPosition = position;
+      if(!this.selectedPosition || (this.selectedPosition.figi !== position.figi)) {
+        this.selectedPosition = position;
+      } else {
+        this.selectedPosition = null;
+      }
+
     }
   }
 </script>
@@ -77,5 +82,6 @@
 
   .v-app-container {
     padding: 8px;
+    overflow: hidden;
   }
 </style>

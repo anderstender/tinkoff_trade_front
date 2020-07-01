@@ -4,6 +4,7 @@ import {namespace} from 'vuex-class';
 import TSocket from "@/socket/TSocket";
 import {Currencies, Portfolio} from "@/types/domain";
 import {WssEventListener} from "@/types/types";
+import OperationsContainer from "@/store/models/OperationsContainer";
 
 export const vCabinetNamespace = "vPlots";
 export const vCabinetModule = namespace(vCabinetNamespace);
@@ -20,6 +21,8 @@ export default class vCabinet extends VuexModule {
     currencies: []
   };
 
+  currentOperations: OperationsContainer | null = null;
+
 
   @Mutation
   setPortfolio(portfolio: Portfolio) {
@@ -31,5 +34,8 @@ export default class vCabinet extends VuexModule {
     this.currencies = currencies;
   }
 
+  @Mutation setCurrentOperations(operations: OperationsContainer | null) {
+    this.currentOperations = operations;
+  }
 
 }

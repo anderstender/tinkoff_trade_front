@@ -42,10 +42,7 @@
     }
 
     async created(){
-      setInterval(() => {
-        this.TS.emit('front:portfolio:get', {});
-        this.TS.emit('front:portfolio_currencies:get', {});
-      },500);/**/
+
     }
   }
 </script>
@@ -54,6 +51,8 @@
   .v-balance-container {
     padding: 8px;
     background: #f9f9f9;
+    max-height: 50vh;
+    overflow-y: auto;
 
     & &__h2 {
       margin-top: 16px;

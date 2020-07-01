@@ -56,6 +56,16 @@ export default class TSocket {
     this.WSS_HANDLERS[event].push(handler);
   }
 
+  clear(event, handler: WssEventListener) {
+    if(!this.WSS_HANDLERS[event]) {
+      return;
+    }
+    const index = this.WSS_HANDLERS[event].findIndex(h => h === handler);
+    if(index !== -1) {
+      delete this.WSS_HANDLERS[event][index];
+    }
+  }
+
   emit(event:string, message: any) {
     if(!this.socket) return;
 
