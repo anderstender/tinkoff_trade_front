@@ -2,8 +2,7 @@
   <b-container class="v-instrument-info-container">
     <v-spinner v-if="loading"/>
     <div v-else>
-      <v-operations-list v-if="currentOperations"
-                         :operations-container="currentOperations" />
+      <v-operations-list v-if="currentPosition"/>
     </div>
   </b-container>
 </template>
@@ -12,7 +11,7 @@
   import {Component, Vue, Prop, Watch} from 'vue-property-decorator';
   import {Operations, PortfolioPosition} from '@/types/domain';
   import {vCabinetModule} from "@/store/vCabinet.module";
-  import OperationsContainer from "@/store/models/OperationsContainer";
+  import PositionContainer from "@/store/models/PositionContainer";
   import VOperationsList from "@/components/operations/VOperationsList.vue";
   import VSpinner from '@/components/VSpinner.vue';
 
@@ -30,13 +29,13 @@
   export default class VInstrumentInfo extends Vue {
     @Prop() position !: PortfolioPosition;
 
-    @vCabinetModule.State currentOperations!: OperationsContainer;
-    @vCabinetModule.Mutation setCurrentOperations!: (operations: OperationsContainer | null) => void;
+    @vCabinetModule.State currentPosition!: PositionContainer;
+    @vCabinetModule.Mutation setCurrentPosition!: (operations: PositionContainer | null) => void;
 
     operationsGetHandle(message, ws) {
       console.log(message);
-      if(this.currentOperations){
-        this.currentOperations.setOperations(message as Operations);
+      if(this.currentPosition){
+        this.currentPosition.setOperations(message as Operations);
       }
     }
 
@@ -47,14 +46,14 @@
     }
 
     async beforeDestroy() {
-      this.setCurrentOperations(null);
+      this.setCurrentPosition(null);
       this.TS.clear(TINKOFF_OPERATIONS_GET, this.operationsGetHandle);
     }
 
     @Watch('position')
     reqOperationData(position: PortfolioPosition) {
-      const operationsContainer = new OperationsContainer(position);
-      this.setCurrentOperations(operationsContainer);
+      const positionContainer = new PositionContainer(position);
+      this.setCurrentPosition(positionContainer);
       this.TS.emit(FRONT_OPERATIONS_GET, {
         from: new Date(2020, 1, 1).toISOString(),
         to: (new Date()).toISOString(),
@@ -63,7 +62,7 @@
     }
 
     get loading() {
-      return (this.currentOperations?.loading ?? true);
+      return (this.currentPosition?.loading ?? true);
     }
   }
 </script>

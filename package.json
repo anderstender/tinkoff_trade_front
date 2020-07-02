@@ -27,7 +27,7 @@
     "eslint-plugin-typescript": "0.14.0",
     "eslint-plugin-vue": "^6.2.2",
     "keyboardevent-key-polyfill": "^1.1.0",
-    "moment": "2.24.0",
+    "moment": "^2.24.0",
     "node-sass": "^4.14.1",
     "reflect-metadata": "0.1.13",
     "sass-loader": "7.1.0",

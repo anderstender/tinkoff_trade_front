@@ -1,6 +1,6 @@
 import {Operation, Operations, PortfolioPosition} from "@/types/domain";
 
-export default class OperationsContainer {
+export default class PositionContainer {
   position!: PortfolioPosition;
   operations: Operation[] | null = null;
 

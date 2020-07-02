@@ -1,5 +1,5 @@
 <template>
-  <div class="v-balance-row" @click="$emit('click', position)">
+  <div class="v-balance-row" @click="$emit('click', position)" :class="activeClass">
     <div class="v-balance-row__top">
       <div class="v-balance-row__top__name">{{name}}</div>
       <div class="v-balance-row__top__sum">{{sum}}</div>
@@ -18,6 +18,8 @@
   import {PortfolioPosition} from "@/types/domain";
   import {currency} from "@/helpers/currencyHelper";
   import VBalanceChange from '@/components/balance/VBalanceChange.vue';
+  import {vCabinetModule} from '@/store/vCabinet.module';
+  import PositionContainer from '@/store/models/PositionContainer';
 
   @Component({
     components: {
@@ -26,6 +28,7 @@
   })
   export default class VBalanceRow extends Vue {
     @Prop() position !: PortfolioPosition;
+    @vCabinetModule.State currentPosition!: PositionContainer;
 
     get sum() {
       return currency((this.position.averagePositionPrice?.value ?? 0) * this.position.balance, this.position.averagePositionPrice?.currency);
@@ -43,6 +46,10 @@
       return this.changeValue > 0 ? '+' : '';
     }
 
+    get activeClass() {
+      return this.currentPosition && this.position.figi === this.currentPosition.position.figi ? 'v-balance-row__active' : '';
+    }
+
     get change() {
       return this.changeSymbol + currency(this.changeValue, this.position.expectedYield?.currency)
     }
@@ -57,6 +64,10 @@
     margin-top: 8px;
     background: #efefef;
     cursor: pointer;
+
+    &.v-balance-row__active {
+      background: #e1e1e1;
+    }
 
     & &__top,
     & &__bottom {

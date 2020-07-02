@@ -1,25 +1,31 @@
 <template>
-  <div class="v-operations-list">
+  <b-container class="v-operations-list">
+
+
+    <v-operation-header />
     <v-operation-row v-for="(op, index) in operationsList"
       :key="index"
       :operation="op"
-      :position="operationsContainer.position"/>
-  </div>
+      :position="currentPosition.position"/>
+  </b-container>
 </template>
 
 <script lang="ts">
   import {Component, Vue, Prop} from 'vue-property-decorator';
-  import OperationsContainer from "@/store/models/OperationsContainer";
+  import PositionContainer from "@/store/models/PositionContainer";
   import VOperationRow from "@/components/operations/VOperationRow.vue";
+  import {vCabinetModule} from '@/store/vCabinet.module';
+  import VOperationHeader from '@/components/operations/VOperationHeader.vue';
 
 
   @Component({
     components: {
-      VOperationRow
+      VOperationRow,
+      VOperationHeader
     }
   })
   export default class VOperationsList extends Vue {
-    @Prop() operationsContainer!: OperationsContainer;
+    @vCabinetModule.State currentPosition!: PositionContainer;
 
     excludeOperationTypes = [
       "BrokerCommission",
@@ -30,7 +36,7 @@
     ];
 
     get operationsList() {
-      return (this.operationsContainer.operations || [])
+      return ((this.currentPosition && this.currentPosition.operations) || [])
         .filter(operation => !this.excludeOperationTypes.includes(String(operation.operationType)));
     }
   }
@@ -40,5 +46,11 @@
   .v-operations-list {
     display: flex;
     flex-direction: column;
+
+    &.container {
+      margin-left: -15px;
+      padding-right: 0;
+      padding-left: 0;
+    }
   }
 </style>

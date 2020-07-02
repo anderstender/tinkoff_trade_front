@@ -5,10 +5,18 @@ export function instrumentType(type: InstrumentType | undefined) {
     return "";
   }
   const dict = {
-    "Stock" : "Акция",
+    "Stock" : "Акции",
     "Currency" : "Валюта",
     "Etf" : "Etf",
-    "Bond" : "Облигация"
+    "Bond" : "Облигации"
   };
   return dict[type];
+}
+
+export function operations(op) {
+  const types = {
+    "Buy": "Покупка",
+    "Sell" : "Продажа"
+  };
+  return types[op] ?? op;
 }
