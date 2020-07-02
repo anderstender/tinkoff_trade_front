@@ -1,9 +1,6 @@
 <template>
   <b-container class="v-instrument-info-container">
-    <b-spinner class="v-instrument-info-container__spinner"
-               v-if="loading"
-               type="grow"
-               variant="info" />
+    <v-spinner v-if="loading"/>
     <div v-else>
       <v-operations-list v-if="currentOperations"
                          :operations-container="currentOperations" />
@@ -17,11 +14,17 @@
   import {vCabinetModule} from "@/store/vCabinet.module";
   import OperationsContainer from "@/store/models/OperationsContainer";
   import VOperationsList from "@/components/operations/VOperationsList.vue";
-  const TINKOFF_OPERATIONS_GET = 'tinkoff:operations:get';
+  import VSpinner from '@/components/VSpinner.vue';
+
+
+  import {
+    TINKOFF_OPERATIONS_GET,
+    FRONT_OPERATIONS_GET } from "@/events/constants";
 
   @Component({
     components: {
-      VOperationsList
+      VOperationsList,
+      VSpinner
     }
   })
   export default class VInstrumentInfo extends Vue {
@@ -52,7 +55,7 @@
     reqOperationData(position: PortfolioPosition) {
       const operationsContainer = new OperationsContainer(position);
       this.setCurrentOperations(operationsContainer);
-      this.TS.emit('front:operations:get', {
+      this.TS.emit(FRONT_OPERATIONS_GET, {
         from: new Date(2020, 1, 1).toISOString(),
         to: (new Date()).toISOString(),
         figi: position.figi
@@ -67,16 +70,11 @@
 
 <style lang="scss">
   .v-instrument-info-container {
-    max-height: 50vh;
-    min-height: 50vh;
+    max-height: 48vh;
+    min-height: 48vh;
     overflow-y: auto;
     padding: 8px;
     background: #f9f9f9;
     margin-top: 8px;
-
-    & &__spinner {
-      margin-left: calc(50% - 16px);
-      margin-top: calc(40% - 16px);
-    }
   }
 </style>

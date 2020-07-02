@@ -1,7 +1,8 @@
 <template>
   <div class="v-balance-change-container" :class="changeClass">
-    <b-icon v-if="arrowIcon" :icon="arrowIcon" />
-    <div class="v-balance-change-container__text">{{changeText}} ({{changePercent}}%)</div>
+    <div class="v-balance-change-container__text">
+      <v-balance-diff :diff="this.change" :diff-percent="diffPercent" />
+    </div>
 
   </div>
 </template>
@@ -9,10 +10,16 @@
   import {Component, Vue, Prop} from "vue-property-decorator";
   import {PortfolioPosition} from '@/types/domain';
   import {currency} from '@/helpers/currencyHelper';
+  import VBalanceDiff from '@/components/balance/VBalanceDiff.vue';
 
-  @Component
+  @Component({
+    components: {
+      VBalanceDiff
+    }
+  })
   export default class VBalanceChange extends Vue {
     @Prop() position !: PortfolioPosition;
+    @Prop({default: true}) showPercent !: boolean;
 
     get changeClass() {
       return this.changePerAction > 0 ? 'text-success' : (this.changePerAction < 0 ? 'text-danger' : 'text-secondary');
@@ -30,8 +37,12 @@
       return this.price - this.changePerAction;
     }
 
+    get diffPercent() {
+      return (Math.round(((this.changePerAction)/this.basePrice) * 100 * 100) / 100);
+    }
+
     get changePercent() {
-      return (Math.round(((this.changePerAction)/this.basePrice) * 100 * 100) / 100).splitZeros();
+      return this.diffPercent.splitZeros();
     }
 
     get change() {
@@ -44,19 +55,13 @@
 
     get changeText() {
       return this.change.currency(this.position.expectedYield?.currency);
-      //this.changeSymbol + currency(this.changeValue, this.position.expectedYield?.currency)
     }
   }
 </script>
 
 <style lang="scss">
   .v-balance-change-container {
-    display: flex;
-    flex-direction: row;
-
     & &__text {
-      display: flex;
-      flex-direction: row;
       font-size: 12px;
       line-height: 1.41;
     }

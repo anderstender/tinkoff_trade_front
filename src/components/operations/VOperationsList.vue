@@ -2,7 +2,8 @@
   <div class="v-operations-list">
     <v-operation-row v-for="(op, index) in operationsList"
       :key="index"
-      :operation="op"/>
+      :operation="op"
+      :position="operationsContainer.position"/>
   </div>
 </template>
 
@@ -29,13 +30,15 @@
     ];
 
     get operationsList() {
-      return (this.operationsContainer.operations || []).filter(operation => !this.excludeOperationTypes.includes(String(operation.operationType)));
+      return (this.operationsContainer.operations || [])
+        .filter(operation => !this.excludeOperationTypes.includes(String(operation.operationType)));
     }
   }
 </script>
 
 <style lang="scss">
-    .v-operations-list {
-
-    }
+  .v-operations-list {
+    display: flex;
+    flex-direction: column;
+  }
 </style>

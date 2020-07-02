@@ -50,18 +50,8 @@
 
     async created(){
       this.$nextTick(() => {
-        //console.log(this.TS);
         this.TS.on('tinkoff:orderbook:update', (message, ws) => {});
-        this.TS.on('tinkoff:portfolio:get', (message, ws) => {
-          this.setPortfolio(message as Portfolio);
-        });
-        this.TS.on('tinkoff:portfolio_currencies:get', (message, ws) => {
-          this.setCurrencies(message as Currencies);
-        });
 
-
-        this.TS.emit('front:portfolio:get', {});
-        this.TS.emit('front:portfolio_currencies:get', {});
       });
     }
 
