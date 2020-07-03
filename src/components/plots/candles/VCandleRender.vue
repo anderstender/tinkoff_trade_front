@@ -4,35 +4,36 @@
   </div>
 </template>
 <script lang="ts">
-  import {Component, Vue, Prop, Ref} from "vue-property-decorator";
+  import {Component, Vue, Prop, Ref, Watch} from "vue-property-decorator";
   import CandleContainer from '@/components/plots/candles/models/CandleContainer';
+  import CandleRender from '@/components/plots/candles/CandleRender';
 
   @Component
   export default class VCandleRender extends Vue {
     @Prop({required: true}) candle !: CandleContainer;
     @Ref() readonly canvas !: HTMLCanvasElement;
 
-
-    canvasClear() {
-      const context = this.canvas.getContext("2d");
-      if(!context) {
-        throw new Error('no canvas context');
-      }
-      context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      context.fillStyle = "#111";
-      context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
+    renderer!: CandleRender;
 
     async created(){
       this.$nextTick(() => {
-        console.log(this.canvas);
-        this.canvasClear();
+        this.canvas.width = 1000;
+        this.canvas.height = 800;
+
+        this.renderer = new CandleRender(this.canvas);
+        this.draw(this.candle);
       });
     }
 
-    get candles() {
+    get candles(){
       return this.candle.candles;
+    }
+
+    @Watch('candles')
+    draw(candle){
+      if(!this.renderer) return;
+      this.renderer.clear();
+      this.renderer.draw(this.candle);
     }
 
     get min() {

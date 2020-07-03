@@ -19,6 +19,8 @@ export default class CandleContainer {
   }
 
   push(candle: CandleStreaming) {
+    this.candles.push(candle);
+    return;
     if(!this.lastCandle){
       this.candles.push(candle);
       return;

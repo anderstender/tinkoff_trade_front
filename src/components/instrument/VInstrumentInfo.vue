@@ -33,7 +33,6 @@
     @vCabinetModule.Mutation setCurrentPosition!: (operations: PositionContainer | null) => void;
 
     operationsGetHandle(message, ws) {
-      console.log(message);
       if(this.currentPosition){
         this.currentPosition.setOperations(message as Operations);
       }
