@@ -3,6 +3,8 @@ export default class CandleContainer {
   figi: string;
   candles: CandleStreaming[] = [];
 
+  counter: number = 0;
+
   constructor(figi) {
     this.figi = figi;
   }
@@ -19,26 +21,29 @@ export default class CandleContainer {
   }
 
   push(candle: CandleStreaming) {
-    this.candles.push(candle);
-    return;
+    /*this.candles.push(candle);
+    return;/**/
     if(!this.lastCandle){
       this.candles.push(candle);
+      this.counter++;
       return;
     }
     if(this.lastCandle.figi !== candle.figi) return;
+
 
     if(this.lastCandle.time === candle.time) {
       this.lastCandle = candle;
     }else {
       this.candles.push(candle);
     }
+    this.counter++;
   }
 
   get min() {
     let min = Number.MAX_SAFE_INTEGER;
     this.candles.forEach((c) => {
       min = Math.min(min, c.c, c.h, c.l, c.o);
-    })
+    });
     return min;
   }
 
@@ -46,7 +51,7 @@ export default class CandleContainer {
     let max = Number.MIN_SAFE_INTEGER;
     this.candles.forEach((c) => {
       max = Math.max(max, c.c, c.h, c.l, c.o);
-    })
+    });
     return max;
   }
 }

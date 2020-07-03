@@ -18,22 +18,20 @@ export default class CandleRender {
   }
 
   get vOffset() {
-    return this.canvas.height * 0.1;
+    return this.canvas.height * 0.05;
   }
 
   get hOffset() {
-    return this.canvas.width * 0.1;
+    return this.canvas.width * 0.05;
   }
-  candleWidth = 20;
-  candleMargin = 2;
+  candleWidth = 5;
+  candleMargin = 1;
 
-  renderCandle(candle: CandleContainer, index) {
-    const cndl = candle.candles[index];
-    console.log(cndl);
+  renderCandle(candle: CandleContainer, cndl: CandleStreaming, offset) {
     const {
       o, c, h, l
-    } = candle.candles[index];
-    const color = o < c ? "green" : (o > c ? "red" : "grey");
+    } = cndl;
+    const color = o < c ? "green" : (o > c ? "red" : "white");
     const ctx = this.canvas.getContext("2d");
     if (!ctx) {
       throw new Error('no canvas context');
@@ -42,39 +40,63 @@ export default class CandleRender {
     const min = candle.min;
 
 
-    const x = this.indexToX(index);
-    const y = Math.max(this.priceToY(o, min, max), this.priceToY(c, min, max));
-    const ch = Math.abs(this.priceToY(o, min, max) - this.priceToY(c, min, max));
-    console.log(x, y, this.candleWidth, ch)
+    const x = offset - (this.candleWidth / 2);
+    const y = this.priceToY(Math.max(o,c), min, max);
+    const ch = Math.abs(this.priceToY(o, min, max) - this.priceToY(c, min, max)) || 1;
+    console.log(x, y, this.candleWidth, ch, cndl);
+
+
+    const y2 = this.priceToY(h, min, max);
+    const y3 = this.priceToY(l, min, max);
+    const x1 = offset;
+
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = color;
+    ctx.moveTo(x1, y2);
+    ctx.lineTo(x1, y3);
+    ctx.stroke();
+
 
     ctx.fillStyle = color;
     ctx.fillRect(
-      x - (this.candleWidth / 2),
+      x,
       y,
       this.candleWidth,
       ch
     );
+
+
+  }
+
+  scale(min, max) {
+    if(max == min) {
+      max = max * 20;
+      min = min * 0.05
+    }
+    const diff = max - min;
+    const sc = (diff === 0) ? 0 : ((this.canvas.height - (this.vOffset*2)) / diff);
+    return sc > 800 ? 800 :sc;
   }
 
   priceToY(price, min, max) {
-    if(max == min) {
-      max = max * 1.2;
-      min = min * 0.8
-    }
-
-    const diff = max - min;
-    const scale = (diff) === 0 ? 0 : ((this.canvas.height*0.8) / diff);
-    return ((max - price) * scale + this.vOffset);
+    const scale = this.scale(min, max);
+    return (this.canvas.height/2 - (price - min) * scale + this.vOffset);
   }
 
   indexToX(index) {
-    return this.canvas.width - this.hOffset + ((index+1) * (this.candleWidth + this.candleMargin))
+    return (index * (this.candleWidth + this.candleMargin)) - this.hOffset;
   }
 
   draw(candle: CandleContainer) {
     this.clear();
-    for(let i = candle.candles.length - 1; i >= 0; i--){
-      this.renderCandle(candle, i);
+
+    const maxCnt = Math.round(this.canvas.width / (this.candleWidth + this.candleMargin));
+    const len = candle.candles.length;
+    const minIndex = Math.round((len - maxCnt) >=0 ? (len - maxCnt) : 0);
+    let counter = maxCnt;
+    for(let i = len - 1; i >= minIndex; i--, counter--){
+      this.renderCandle(candle, candle.candles[i], this.indexToX(counter));
     }
   }
 

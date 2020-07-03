@@ -1,5 +1,5 @@
 <template>
-  <div class="v-candle-render">
+  <div class="v-candle-render" ref="canvasContainer">
     <canvas class="v-candle-render__canvas" ref="canvas"/>
   </div>
 </template>
@@ -12,13 +12,14 @@
   export default class VCandleRender extends Vue {
     @Prop({required: true}) candle !: CandleContainer;
     @Ref() readonly canvas !: HTMLCanvasElement;
+    @Ref() readonly canvasContainer !: HTMLDivElement;
 
     renderer!: CandleRender;
 
     async created(){
       this.$nextTick(() => {
-        this.canvas.width = 1000;
-        this.canvas.height = 800;
+        this.canvas.width = this.canvasContainer.offsetWidth;
+        this.canvas.height = this.canvasContainer?.offsetHeight;
 
         this.renderer = new CandleRender(this.canvas);
         this.draw(this.candle);
@@ -29,7 +30,11 @@
       return this.candle.candles;
     }
 
-    @Watch('candles')
+    get counter() {
+      return this.candle.counter;
+    }
+
+    @Watch('counter')
     draw(candle){
       if(!this.renderer) return;
       this.renderer.clear();

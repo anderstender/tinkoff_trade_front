@@ -17,7 +17,7 @@
     FRONT_CANDLE_SUBSCRIBE,
     FRONT_CANDLE_UNSUBSCRIBE
   } from '@/events/constants';
-  import {CandleStreaming} from '@/types/types';
+  import {CandleStreaming, Interval} from '@/types/types';
   import CandleContainer from '@/components/plots/candles/models/CandleContainer';
   import VCandleRender from '@/components/plots/candles/VCandleRender.vue';
 
@@ -38,7 +38,7 @@
     async created() {
       this.TS.on(TINKOFF_SEARCH_ONE_GET, this.setInstrument);
       this.getInstrument(this.figi);
-      this.subscribe(this.figi);
+      //this.subscribe(this.figi);
     }
 
     async beforeDestroy() {
@@ -50,18 +50,22 @@
       this.candle.push(candleStreaming);
     }
 
+    interval: Interval = "1min";
+
     subscribe(figi) {
       this.candle = new CandleContainer(figi);
       this.TS.on(TINKOFF_CANDLE_UPDATE, this.updateCandle);
       this.TS.emit(FRONT_CANDLE_SUBSCRIBE, {
-        figi
+        figi,
+        interval: this.interval
       })
     }
 
     unsubscribe(figi?) {
       if(!figi) return;
       this.TS.emit(FRONT_CANDLE_UNSUBSCRIBE, {
-        figi
+        figi,
+        interval: this.interval
       });
       this.TS.clear(TINKOFF_CANDLE_UPDATE, this.updateCandle);
     }
@@ -90,6 +94,6 @@
 
 <style lang="scss">
   .v-candle {
-    height: 98%;
+    height: 100%;
   }
 </style>
