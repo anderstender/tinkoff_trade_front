@@ -7,7 +7,10 @@
           v-if="selectedPosition"
           :position="selectedPosition" />
       </b-col>
-      <b-col cols="8">test2</b-col>
+      <b-col cols="8">
+        <v-candle v-if="selectedPosition" :figi="selectedPosition.figi" />
+
+      </b-col>
     </b-row>
   </b-container>
 </template>
@@ -16,6 +19,7 @@
   import {Component, Vue} from 'vue-property-decorator';
   import TSocket from "@/socket/TSocket";
   import {vPlotsModule, vPlotsNamespace} from '@/store/vPlots.module';
+  import VCandle from '@/components/plots/candles/VCandle.vue';
 
 
   import vPlots from '@/store/vPlots.module';
@@ -28,7 +32,8 @@
   @Component({
     components: {
       VBalance,
-      VInstrumentInfo
+      VInstrumentInfo,
+      VCandle
     },
     vuexModules: {
       [vPlotsNamespace]: vPlots,

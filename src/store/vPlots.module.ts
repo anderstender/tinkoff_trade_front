@@ -13,4 +13,5 @@ export default class vPlots extends VuexModule {
 
   graph: Array<any> = [];
 
+
 }
