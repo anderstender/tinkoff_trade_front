@@ -1,7 +1,8 @@
 import {CandleStreaming} from '@/types/types';
+import {Candle} from "@/types/domain";
 export default class CandleContainer {
   figi: string;
-  candles: CandleStreaming[] = [];
+  candles: (CandleStreaming | Candle)[] = [];
 
   counter: number = 0;
 
@@ -9,10 +10,10 @@ export default class CandleContainer {
     this.figi = figi;
   }
 
-  get lastCandle(): CandleStreaming {
+  get lastCandle(): CandleStreaming | Candle {
     return this.candles[this.candles.length-1];
   }
-  set lastCandle(candle: CandleStreaming) {
+  set lastCandle(candle: CandleStreaming | Candle) {
     if(!this.candles.length) {
       this.candles.push(candle);
     }else {
@@ -20,7 +21,12 @@ export default class CandleContainer {
     }
   }
 
-  push(candle: CandleStreaming) {
+  setHistory(candles: (CandleStreaming | Candle)[]) {
+    let tmp = [...this.candles];
+    this.candles = candles;
+  }
+
+  push(candle: CandleStreaming | Candle) {
     /*this.candles.push(candle);
     return;/**/
     if(!this.lastCandle){

@@ -22,7 +22,7 @@
         this.canvas.height = this.canvasContainer?.offsetHeight;
 
         this.renderer = new CandleRender(this.canvas);
-        this.draw(this.candle);
+        this.draw();
       });
     }
 
@@ -34,13 +34,16 @@
       return this.candle.counter;
     }
 
-    @Watch('counter')
-    draw(candle){
+    @Watch('lastCandle')
+    draw(){
       if(!this.renderer) return;
       this.renderer.clear();
       this.renderer.draw(this.candle);
     }
 
+    get lastCandle() {
+      return this.candle.lastCandle;
+    }
     get min() {
       return this.candle.min;
     }

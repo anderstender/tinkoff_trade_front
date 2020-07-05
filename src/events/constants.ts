@@ -17,3 +17,6 @@ export const TINKOFF_CANDLE_UPDATE = 'tinkoff:candle:update';
 
 export const FRONT_CANDLE_UNSUBSCRIBE = 'front:candle:unsubscribe';
 export const TINKOFF_CANDLE_UNSUBSCRIBE = 'tinkoff:candle:unsubscribe';
+
+export const FRONT_CANDLE_GET = 'front:candles:get';
+export const TINKOFF_CANDLE_GET = 'tinkoff:candles:get';

@@ -18,14 +18,14 @@ export default class CandleRender {
   }
 
   get vOffset() {
-    return this.canvas.height * 0.05;
+    return Math.round(this.canvas.height * 0.05);
   }
 
   get hOffset() {
-    return this.canvas.width * 0.05;
+    return Math.round(this.canvas.width * 0.05);
   }
-  candleWidth = 5;
-  candleMargin = 1;
+  candleWidth = 2;
+  candleMargin = 3;
 
   renderCandle(candle: CandleContainer, cndl: CandleStreaming, offset) {
     const {
@@ -40,12 +40,9 @@ export default class CandleRender {
     const min = candle.min;
 
 
-    const x = offset - (this.candleWidth / 2);
+    const x = offset - this.candleWidth;
     const y = this.priceToY(Math.max(o,c), min, max);
     const ch = Math.abs(this.priceToY(o, min, max) - this.priceToY(c, min, max)) || 1;
-    console.log(x, y, this.candleWidth, ch, cndl);
-
-
     const y2 = this.priceToY(h, min, max);
     const y3 = this.priceToY(l, min, max);
     const x1 = offset;
@@ -53,8 +50,8 @@ export default class CandleRender {
     ctx.beginPath();
     ctx.lineWidth = 1;
     ctx.strokeStyle = color;
-    ctx.moveTo(x1, y2);
-    ctx.lineTo(x1, y3);
+    ctx.moveTo(Math.round(x1), y2);
+    ctx.lineTo(Math.round(x1), y3);
     ctx.stroke();
 
 
@@ -62,7 +59,7 @@ export default class CandleRender {
     ctx.fillRect(
       x,
       y,
-      this.candleWidth,
+      this.candleWidth*2,
       ch
     );
 
@@ -76,22 +73,22 @@ export default class CandleRender {
     }
     const diff = max - min;
     const sc = (diff === 0) ? 0 : ((this.canvas.height - (this.vOffset*2)) / diff);
-    return sc > 800 ? 800 :sc;
+    return Math.round(sc > 100 ? 100 :sc);
   }
 
   priceToY(price, min, max) {
     const scale = this.scale(min, max);
-    return (this.canvas.height/2 - (price - min) * scale + this.vOffset);
+    return Math.round(this.canvas.height/2 - (price - min) * scale + this.vOffset);
   }
 
   indexToX(index) {
-    return (index * (this.candleWidth + this.candleMargin)) - this.hOffset;
+    return Math.round((index * (this.candleWidth*2 + this.candleMargin)) - this.hOffset);
   }
 
   draw(candle: CandleContainer) {
     this.clear();
 
-    const maxCnt = Math.round(this.canvas.width / (this.candleWidth + this.candleMargin));
+    const maxCnt = Math.round(this.canvas.width / (this.candleWidth*2 + this.candleMargin));
     const len = candle.candles.length;
     const minIndex = Math.round((len - maxCnt) >=0 ? (len - maxCnt) : 0);
     let counter = maxCnt;
