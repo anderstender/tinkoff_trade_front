@@ -7,49 +7,43 @@
   import {Component, Vue, Prop, Ref, Watch} from "vue-property-decorator";
   import CandleContainer from '@/components/plots/candles/models/CandleContainer';
   import CandleRender from '@/components/plots/candles/CandleRender';
+  import {MarketInstrument} from "@/types/domain";
 
   @Component
   export default class VCandleRender extends Vue {
     @Prop({required: true}) candle !: CandleContainer;
+    @Prop({required: true}) instrument !: MarketInstrument;
     @Ref() readonly canvas !: HTMLCanvasElement;
     @Ref() readonly canvasContainer !: HTMLDivElement;
 
     renderer!: CandleRender;
 
+
+    init() {
+      this.canvas.width = this.canvasContainer.offsetWidth;
+      this.canvas.height = this.canvasContainer?.offsetHeight;
+      this.renderer = new CandleRender(this.canvas, this.instrument);
+      this.draw();
+    }
+
     async created(){
-      this.$nextTick(() => {
-        this.canvas.width = this.canvasContainer.offsetWidth;
-        this.canvas.height = this.canvasContainer?.offsetHeight;
-
-        this.renderer = new CandleRender(this.canvas);
-        this.draw();
-      });
+      this.$nextTick(this.init);
     }
 
-    get candles(){
-      return this.candle.candles;
+    @Watch('instrument')
+    initInstrument(){
+      this.renderer.setInstrument(this.instrument);
     }
 
-    get counter() {
-      return this.candle.counter;
+    async beforeDestroy() {
+      window.cancelAnimationFrame(this.animFrameId);
     }
+    animFrameId: number = 0;
 
-    @Watch('lastCandle')
     draw(){
       if(!this.renderer) return;
-      this.renderer.clear();
       this.renderer.draw(this.candle);
-    }
-
-    get lastCandle() {
-      return this.candle.lastCandle;
-    }
-    get min() {
-      return this.candle.min;
-    }
-
-    get max() {
-      return this.candle.max;
+      this.animFrameId = window.requestAnimationFrame(this.draw);
     }
   }
 </script>

@@ -1,6 +1,9 @@
 <template>
   <div class="v-candle">
-      <v-candle-render :candle="candle" />
+      <v-candle-render
+          v-if="instrument"
+          :candle="candle"
+          :instrument="instrument"/>
   </div>
 </template>
 <script lang="ts">
@@ -38,8 +41,8 @@
 
     async created() {
       this.TS.on(TINKOFF_SEARCH_ONE_GET, this.setInstrument);
-      this.getHistory(this.figi);
-      this.getInstrument(this.figi);
+      this.getHistory();
+      this.getInstrument(this.historyParamsByInterval);
     }
 
     async beforeDestroy() {
@@ -52,7 +55,7 @@
       this.candle.push(candleStreaming);
     }
 
-    interval: Interval = "hour";
+    interval: Interval = "5min";
 
     subscribe(figi) {
       this.candle = new CandleContainer(figi);
@@ -73,20 +76,19 @@
     }
 
 
-    @Watch('figi')
-    getInstrument(figi, oldFigi?) {
-      this.getHistory(figi);
+    @Watch('historyParamsByInterval')
+    getInstrument(params, oldParams?) {
+      this.getHistory();
       this.TS.emit(FRONT_SEARCH_ONE_GET, {
-        figi
+        figi: params.figi
       });
-      this.unsubscribe(oldFigi);
-      this.subscribe(figi);
+      this.unsubscribe(oldParams?.figi || undefined);
+      this.subscribe(params.figi);
     }
 
-
-    historyParamsByInterval(interval: Interval) {
+    get historyParamsByInterval() {
       let from = moment().subtract(1, 'day');
-      switch (interval) {
+      switch (this.interval) {
         case "1min":
         case "2min":
         case "3min":
@@ -112,7 +114,8 @@
           break;
       }
       return {
-        interval,
+        figi: this.figi,
+        interval: this.interval,
         to: String(moment().toISOString()),
         from: String(from.toISOString())
       }
@@ -122,13 +125,10 @@
       this.candle.setHistory(history.candles)
     }
 
-    getHistory(figi){
+    getHistory(){
       this.TS.clear(TINKOFF_CANDLE_GET, this.loadHistory);
       this.TS.on(TINKOFF_CANDLE_GET, this.loadHistory);
-      this.TS.emit(FRONT_CANDLE_GET, {
-        figi,
-        ...(this.historyParamsByInterval(this.interval))
-      });
+      this.TS.emit(FRONT_CANDLE_GET, this.historyParamsByInterval);
     }
 
     setInstrument(instrument: MarketInstrument) {
@@ -137,9 +137,6 @@
       }
     }
 
-    get name() {
-      return (this.instrument && this.instrument.name) || '';
-    }
   }
 </script>
 
